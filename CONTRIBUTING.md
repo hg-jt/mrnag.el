@@ -12,4 +12,4 @@ This project is not strict about style, but mostly follows the coding convention
 identified in the
 [GNU Emacs Manual](https://www.gnu.org/software/emacs/manual/html_node/elisp/Tips.html)
 
-Before you commit changes, please verify your code with `checkdoc` (`C-c ? d`).
+Before you commit changes, please verify your code with `checkdoc` (`M-x checkdoc`).

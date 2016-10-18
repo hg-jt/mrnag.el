@@ -52,7 +52,7 @@
 ;; 2016-10-12  hg-jt  <hg-jt@users.noreply.github.com>
 ;;
 ;;  * Extracted org-mode publisher to separate file.
-
+;;  * Added Slack publisher (mrnag-slack.el)
 
 ;;; Code:
 (require 'json)
