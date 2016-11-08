@@ -195,7 +195,7 @@ The default formatter creates an Org buffer with the data."
         (mrnag-gitlab-baseurl (mrnag--getenv-or-fail "MRNAG_GITLAB_BASEURL"))
         (mrnag-gitlab-token (mrnag--getenv-or-fail "MRNAG_GITLAB_TOKEN"))
         (mrnag-slack-webhook-url (mrnag--getenv-or-fail "MRNAG_SLACK_WEBHOOK_URL"))
-        (mrnag-slack-channel-override "@jeffrey")
+        (mrnag-slack-channel-override (getenv "MRNAG_SLACK_CHANNEL_OVERRIDE"))
         (mrnag-projects-alist (mapcar (lambda (x)
                                         (let ((project-info (apply #'cons (split-string x "="))))
                                           (setcdr project-info (string-to-number (cdr project-info)))
