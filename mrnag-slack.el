@@ -72,6 +72,7 @@ PROJECTS is an alist with elements are of the form (name . id)."
                                      (push `("channel" . ,mrnag-slack-channel-override) slack-request)
                                    slack-request))
                                 'utf-8)))
+    ;(with-temp-file "~/code/slack.json" (insert url-request-data))
     (url-retrieve-synchronously mrnag-slack-webhook-url) ))
 
 (defun mrnag--slack-format-project (project-alist)
@@ -83,20 +84,24 @@ PROJECTS is an alist with elements are of the form (name . id)."
       ("title_link" . ,(assoc-default 'project-url project-alist))
       ("fallback" . ,(format "%s (%d open merge requests)" project-name (length project-merge-requests)))
       ("mrkdwn_in" . ("text" "fields"))
+      ;("thumb_url" . ,(assoc-default 'avatar-url project-alist))  ;; needs to be publically viewable
+      ;("color" . ,(format "#%X%X" project-id project-id))
       ("fields" . ,(mapcar 'mrnag--slack-mr-to-field project-merge-requests))) ))
 
 (defun mrnag--slack-mr-to-field (mr)
   "Convert an MR to a Slack attachment \"field\"."
-  `(("title" . ,(replace-regexp-in-string "\*" "" (assoc-default 'title mr)))
-    ("value" . ,(format "<%s|%d upvotes, %d comments> %s"
-                        (assoc-default 'web_url mr)
-                        (assoc-default 'upvotes mr)
-                        (assoc-default 'user_notes_count mr)
-                        (or (mrnag--slack-gitlab-labels-to-emojiis (assoc-default 'labels mr)) "")))
-    ("short" . ,json-false)))
+  (let ((author (assoc-default 'author mr)))
+    `(("title" . ,(replace-regexp-in-string "\*" "" (assoc-default 'title mr)))
+      ("value" . ,(format "%s %s\n<%s|%d upvotes, %d comments>"
+                          (assoc-default 'username author)
+                          (or (mrnag--slack-gitlab-labels-to-emojiis (assoc-default 'labels mr)) "")
+                          (assoc-default 'web_url mr)
+                          (assoc-default 'upvotes mr)
+                          (assoc-default 'user_notes_count mr)))
+      ("short" . ,json-false))))
 
 (defun mrnag--slack-gitlab-labels-to-emojiis (labels)
-  "Convert GitLab LABELS to `org-mode' tags."
+  "Convert GitLab LABELS to Slack emojiis."
   (when (> (length labels) 0)
     (mapconcat (lambda (label)
                  (format ":%s:" (downcase (replace-regexp-in-string " " "" label))))

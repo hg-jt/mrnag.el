@@ -1,0 +1,8 @@
+# .dockerignore --- Configures files to exclude from the generated Docker image.
+
+# --------------------
+# Project Files
+# --------------------
+.git*
+.dockerignore
+Dockerfile

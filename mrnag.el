@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016 hg-jt
 ;; Author: hg-jt <hg-jt@users.noreply.github.com>
-;; Version: 0.1
+;; Version: 0.2
 ;; Keywords: gitlab
 
 ;; This file is not part of GNU Emacs.
@@ -52,7 +52,13 @@
 ;; 2016-10-12  hg-jt  <hg-jt@users.noreply.github.com>
 ;;
 ;;  * Extracted org-mode publisher to separate file.
-;;  * Added Slack publisher (mrnag-slack.el)
+;;  * Added Slack publisher (mrnag-slack.el).
+;;
+;; 2016-11-08  hg-jt  <hg-jt@users.noreply.github.com>
+;;
+;;  * Added Docker support.
+;;  * Added author info to Slack message.
+;;  * Updated to version 0.2
 
 ;;; Code:
 (require 'json)
@@ -157,6 +163,15 @@ Projects without any open merge requests will be filtered out of the result."
                               ) ))))
                     mrnag-projects-alist)))
 
+(defun mrnag--getenv-or-fail (variable)
+  "Get the value of environment variable VARIABLE.
+
+VARIABLE should be a string.  An error will be thrown in value is nil."
+  (let ((envvar (getenv variable)))
+    (unless envvar
+      (error "%s is not defined" variable))
+    envvar))
+
 ;;;###autoload
 (defun mrnag ()
   "Aggregates merge request data from GitLab and formats it into a report.
@@ -173,5 +188,19 @@ The default formatter creates an Org buffer with the data."
         (publisher (assoc-default mrnag-publisher mrnag-publishers-alist)))
     (funcall publisher merge-requests-alist) ))
 
+;;;###autoload
+(defun mrnag-launcher ()
+  "Launch mrnag using environment variables."
+  (let ((mrnag-publisher 'slack)
+        (mrnag-gitlab-baseurl (mrnag--getenv-or-fail "MRNAG_GITLAB_BASEURL"))
+        (mrnag-gitlab-token (mrnag--getenv-or-fail "MRNAG_GITLAB_TOKEN"))
+        (mrnag-slack-webhook-url (mrnag--getenv-or-fail "MRNAG_SLACK_WEBHOOK_URL"))
+        (mrnag-slack-channel-override "@jeffrey")
+        (mrnag-projects-alist (mapcar (lambda (x)
+                                        (let ((project-info (apply #'cons (split-string x "="))))
+                                          (setcdr project-info (string-to-number (cdr project-info)))
+                                          project-info))
+                                      (split-string (mrnag--getenv-or-fail "MRNAG_PROJECTS") "|"))))
+    (mrnag)))
 (provide 'mrnag)
 ;;; mrnag.el ends here

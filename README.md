@@ -87,3 +87,26 @@ registered symbol in `mrnag-publishers-alist`.
 
 
 [1]: https://docs.gitlab.com/ce/api/merge_requests.html#list-merge-requests
+
+
+## Docker
+
+To build the *mrnag* Docker image:
+
+    $ docker build -t mrnag:latest .
+
+To run the *mrnag* Docker image:
+
+    $ docker run \
+             -it \
+             --rm \
+             -e MRNAG_GITLAB_BASEURL="https://<your-gitlab-host>/api/v3" \
+             -e MRNAG_GITLAB_TOKEN="<your-gitlab-access-token>" \
+             -e MRNAG_SLACK_WEBHOOK_URL="<your-slack-incoming-webhook>" \
+             -e MRNAG_PROJECTS="<pipe-delimited-name-id-pairs>" \
+             mrnag:latest
+
+> *NOTE*: `MRNAG_PROJECTS` is a pipe delimited list of name/id pairs in the form
+> `name=id`. For example:
+>
+>    MRNAG_PROJECTS="Project A=123|Project B=456"
