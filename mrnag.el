@@ -57,7 +57,7 @@
 ;; 2016-11-08  hg-jt  <hg-jt@users.noreply.github.com>
 ;;
 ;;  * Added Docker support.
-;;  * Added author info to Slack message.
+;;  * Added Slack publisher
 ;;  * Updated to version 0.2
 
 ;;; Code:
